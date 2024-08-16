@@ -2,17 +2,15 @@ const Header = (props) => (
   <h1>{props.course}</h1>
 )
 
+const Part = (props) => (
+  <p>{props.info}</p>
+)
+
 const Content = (props) => (
   <>
-    <p>
-      {props.part1}
-    </p>
-    <p>
-      {props.part2}
-    </p>
-    <p>
-      {props.part3}
-    </p>
+    <Part info={props.part1} />
+    <Part info={props.part2} />
+    <Part info={props.part3} />
   </>
 )
 
