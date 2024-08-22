@@ -17,18 +17,24 @@ const Display = ({ label, value, unit }) => {
   )
 }
 
-const Statistics = ({ good, neutral, bad }) => (
-  <>
-    <Display label="good" value={good} />
-    <Display label="neutral" value={neutral} />
-    <Display label="bad" value={bad} />
-    <Display label="all" value={good + neutral + bad} />
-    <Display label="average" value={(good - bad) / (good + neutral + bad)} />
-    <Display label="positive"
-             value={good / (good + neutral + bad) * 100}
-             unit="%" />
-  </>
-)
+const Statistics = ({ good, neutral, bad }) => {
+  if (good + neutral + bad > 0) {
+    return (
+      <>
+        <Display label="good" value={good} />
+        <Display label="neutral" value={neutral} />
+        <Display label="bad" value={bad} />
+        <Display label="all" value={good + neutral + bad} />
+        <Display label="average"
+                 value={(good - bad) / (good + neutral + bad)} />
+        <Display label="positive"
+                 value={good / (good + neutral + bad) * 100}
+                 unit="%" />
+      </>
+    )
+  }
+  return <>No feedback given</>
+}
 
 const App = () => {
   const [good, setGood] = useState(0)
