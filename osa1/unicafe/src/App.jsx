@@ -6,7 +6,16 @@ const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>{text}</button>
 )
 
-const Display = ({ label, value }) => <div>{label} {value}</div>
+const Display = ({ label, value, unit }) => {
+  if (unit) {
+    return (
+      <div>{label} {value} {unit}</div>
+    )
+  }
+  return (
+    <div>{label} {value}</div>
+  )
+}
 
 const App = () => {
   const [good, setGood] = useState(0)
@@ -21,9 +30,14 @@ const App = () => {
       <Button handleClick={() => setBad(bad + 1)} text="bad" />
 
       <Header text="statistics" />
-      <Display label="good" value={good} /> 
-      <Display label="neutral" value={neutral} /> 
-      <Display label="bad" value={bad} /> 
+      <Display label="good" value={good} />
+      <Display label="neutral" value={neutral} />
+      <Display label="bad" value={bad} />
+      <Display label="all" value={good + neutral + bad} />
+      <Display label="average" value={(good - bad) / (good + neutral + bad)} />
+      <Display label="positive"
+               value={good / (good + neutral + bad) * 100}
+               unit="%" />
     </>
   )
 }
