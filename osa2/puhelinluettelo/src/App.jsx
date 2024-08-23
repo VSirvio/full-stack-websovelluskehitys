@@ -1,6 +1,24 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  const notificationStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+
+  return <div style={notificationStyle}>{message}</div>
+}
+
 const Filter = ({ string, onChange }) => (
       <div>
         filter shown with<input value={string} onChange={onChange} />
@@ -40,6 +58,7 @@ const App = () => {
   const [filterStr, setFilterStr] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     personService
@@ -63,6 +82,11 @@ const App = () => {
             setPersons(persons.map(p => p.id !== id ? p : returnedPerson))
             setNewName('')
             setNewNumber('')
+
+            const name = returnedPerson.name
+            const suffix = name.endsWith('s') ? '' : 's'
+            setNotification(`Changed ${name}'${suffix} number`)
+            setTimeout(() => setNotification(null), 3000)
           })
       }
     } else {
@@ -77,6 +101,9 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+
+          setNotification(`Added ${returnedPerson.name}`)
+          setTimeout(() => setNotification(null), 3000)
         })
     }
   }
@@ -87,6 +114,9 @@ const App = () => {
         .remove(id)
         .then(deletedPerson => {
           setPersons(persons.filter(person => person.id !== deletedPerson.id))
+
+          setNotification(`Deleted ${deletedPerson.name}`)
+          setTimeout(() => setNotification(null), 3000)
         })
     }
   }
@@ -102,6 +132,7 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <Filter string={filterStr} onChange={handleFilterChange} />
 
       <h3>Add a new</h3>
