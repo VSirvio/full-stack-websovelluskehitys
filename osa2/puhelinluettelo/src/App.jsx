@@ -1,6 +1,24 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 
+const Error = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  const errorStyle = {
+    color: 'red',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+
+  return <div style={errorStyle}>{message}</div>
+}
+
 const Notification = ({ message }) => {
   if (message === null) {
     return null
@@ -58,6 +76,7 @@ const App = () => {
   const [filterStr, setFilterStr] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [errorMsg, setErrorMsg] = useState(null)
   const [notification, setNotification] = useState(null)
 
   useEffect(() => {
@@ -88,6 +107,12 @@ const App = () => {
             setNotification(`Changed ${name}'${suffix} number`)
             setTimeout(() => setNotification(null), 3000)
           })
+        .catch(error => {
+          setErrorMsg(`Information of ${person.name} has already ` +
+                      `been removed from server`)
+          setTimeout(() => setErrorMsg(null), 3000)
+          setPersons(persons.filter(p => p.id !== id))
+        })
       }
     } else {
       const personObject = {
@@ -132,6 +157,7 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
+      <Error message={errorMsg} />
       <Notification message={notification} />
       <Filter string={filterStr} onChange={handleFilterChange} />
 
