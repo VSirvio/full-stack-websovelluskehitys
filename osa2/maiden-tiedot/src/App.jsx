@@ -7,14 +7,19 @@ const Search = ({ label, term, onChange }) => (
   </div>
 )
 
-const Results = ({ content }) => {
+const Results = ({ content, showCountry }) => {
   if (content.length > 10) {
     return <div>Too many matches, specify another filter</div>
   } else if (content.length > 1) {
     return (
       <>
         {content.map(country =>
-          <div key={country.name.common}>{country.name.common}</div>
+          <div key={country.name.common}>
+            {country.name.common}
+            <button onClick={() => showCountry(country.name.common)}>
+              show
+            </button>
+          </div>
         )}
       </>
     )
@@ -55,10 +60,12 @@ const App = () => {
     ? []
     : countryData.filter(c => c.name.common.match(new RegExp(searchTerm, 'i')))
 
+  const showCountry = name => setSearchTerm(name)
+
   return (
     <>
       <Search label="find countries" term={searchTerm} onChange={search} />
-      <Results content={results} />
+      <Results content={results} showCountry={showCountry} />
     </>
   )
 }
