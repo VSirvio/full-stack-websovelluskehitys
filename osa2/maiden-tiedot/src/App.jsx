@@ -7,7 +7,7 @@ const Search = ({ label, term, onChange }) => (
   </div>
 )
 
-const Results = ({ content, showCountry }) => {
+const Results = ({ content, showCountry, weather, setWeather }) => {
   if (content.length > 10) {
     return <div>Too many matches, specify another filter</div>
   } else if (content.length > 1) {
@@ -25,6 +25,19 @@ const Results = ({ content, showCountry }) => {
     )
   } else if (content.length == 1) {
     const country = content[0]
+
+    if (weather === null || weather.sys.country !== country.cca2) {
+      axios
+        .get(`https://api.openweathermap.org/data/2.5/weather` +
+             `?q=${country.capital[0]},${country.cca2}&units=metric` +
+             `&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`)
+        .then(response => setWeather(response.data))
+    }
+
+    const weather_icon = weather
+      ? `https://openweathermap.org/img/wn/${weather.weather['0'].icon}@2x.png`
+      : ''
+
     return (
       <>
         <h1>{country.name.common}</h1>
@@ -32,11 +45,15 @@ const Results = ({ content, showCountry }) => {
         <div>area {country.area}</div>
         <h3>languages:</h3>
         <ul>
-          {Object.values(country.languages).map(l =>
-            <li key={l}>{l}</li>
+          {Object.values(country.languages).map(language =>
+            <li key={language}>{language}</li>
           )}
         </ul>
         <img src={country.flags.png} />
+        <h2>Weather in {country.capital[0]}</h2>
+        <div>temperature {weather ? weather.main.temp : '-'} Celcius</div>
+        <img src={weather_icon} />
+        <div>wind {weather ? weather.wind.speed : '-'} m/s</div>
       </>
     )
   } else {
@@ -47,6 +64,7 @@ const Results = ({ content, showCountry }) => {
 const App = () => {
   const [countryData, setCountryData] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [weather, setWeather] = useState(null)
 
   useEffect(() => {
     axios
@@ -64,8 +82,13 @@ const App = () => {
 
   return (
     <>
-      <Search label="find countries" term={searchTerm} onChange={search} />
-      <Results content={results} showCountry={showCountry} />
+      <Search label="find countries"
+              term={searchTerm}
+              onChange={search} />
+      <Results content={results}
+               showCountry={showCountry}
+               weather={weather}
+               setWeather={setWeather} />
     </>
   )
 }
